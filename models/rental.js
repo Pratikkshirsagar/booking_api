@@ -43,4 +43,11 @@ const rentalSchema = new mongoose.Schema({
   },
 });
 
+rentalSchema.statics.sendError = function (res, config) {
+  const { status, detail } = config;
+  return res
+    .status(status)
+    .send({ error: [{ title: 'Rental Error', detail }] });
+};
+
 module.exports = mongoose.model('Rental', rentalSchema);

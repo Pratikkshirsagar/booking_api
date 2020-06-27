@@ -4,7 +4,7 @@ exports.getRentals = async (req, res, next) => {
   try {
     const rentals = await Rental.find({});
 
-    res.json({ status: 'success', data: rentals });
+    res.json({ status: 'success', count: rentals.length, data: rentals });
   } catch (err) {
     res.status(422).json({ status: 'fail', err });
   }
@@ -16,9 +16,10 @@ exports.getRental = async (req, res, next) => {
     const rental = await Rental.findById(rentalId);
 
     if (!rental) {
-      return res
-        .status(404)
-        .json({ status: 'fail', message: 'No resource found' });
+      return Rental.sendError(res, {
+        status: 422,
+        detail: 'cannot find rental data',
+      });
     }
 
     res.json({ status: 'success', data: rental });
@@ -36,10 +37,41 @@ exports.createRental = async (req, res, next) => {
   }
 };
 
-exports.updateRentals = (req, res, next) => {
-  res.status(200).json({ status: 'success', data: 'Data' });
+exports.updateRentals = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const rental = await Rental.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!rental) {
+      return Rental.sendError(res, {
+        status: 422,
+        detail: 'cannot find rental data',
+      });
+    }
+
+    res.json({ status: 'success', data: rental });
+  } catch (err) {
+    res.json({ status: 'fail', err });
+  }
 };
 
-exports.deleteRentals = (req, res, next) => {
-  res.status(200).json({ status: 'success', data: 'Data' });
+exports.deleteRentals = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const rental = await Rental.findByIdAndDelete(id);
+
+    if (!rental) {
+      return Rental.sendError(res, {
+        status: 422,
+        detail: 'cannot find rental data',
+      });
+    }
+
+    res.json({ status: 'success', data: {} });
+  } catch (err) {
+    res.json({ status: 'fail', err });
+  }
 };
