@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res, next) => {
   try {
@@ -29,7 +30,16 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    res.json({ token: 'token' });
+    const token = jwt.sign(
+      {
+        sub: user.id,
+        username: user.name,
+      },
+      process.env.JET_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ token });
   } catch (err) {
     res.json({ status: false });
   }
