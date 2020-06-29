@@ -44,6 +44,7 @@ exports.register = async (req, res, next) => {
 
     res.json({ status: true, detail: 'user register' });
   } catch (err) {
-    res.json({ status: false, error, err });
+    console.log(err);
+    res.json({ status: false });
   }
 };

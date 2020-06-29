@@ -3,9 +3,14 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const rentalRoutes = require('./routes/rentals');
+const userRoutes = require('./routes/users');
 
 // loading env vars
 dotenv.config({ path: './config/config.env' });
+
+// models
+require('./models/rental');
+require('./models/user');
 
 // db connection
 mongoose.connect(
@@ -31,7 +36,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/v1/rentals', rentalRoutes);
-
+app.use('/api/v1/users', userRoutes);
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
