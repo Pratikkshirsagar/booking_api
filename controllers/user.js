@@ -2,7 +2,34 @@ const User = require('../models/user');
 
 exports.login = async (req, res, next) => {
   try {
-    res.json({ status: true, message: 'login' });
+    const { email, password } = req.body;
+
+    if (!password || !email) {
+      return res.status(422).send({
+        errors: [
+          { title: 'Missing Data!', detail: 'Email or passsword missing' },
+        ],
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      res.status(422).json({
+        title: 'Invalid email',
+        detail: `User with provided email doesn't exist`,
+      });
+    }
+
+    const isMatch = await user.hasSamePassword(password);
+
+    if (!isMatch) {
+      res.status(401).json({
+        detail: 'Invalid credentials',
+      });
+    }
+
+    res.json({ token: 'token' });
   } catch (err) {
     res.json({ status: false });
   }
