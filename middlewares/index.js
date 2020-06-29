@@ -1,4 +1,9 @@
 exports.provideErrorHandlers = (req, res, next) => {
+  res.sendAPiError = function (config) {
+    const { status = 422, title, detail } = config;
+    return res.status(status).send({ error: [{ title, detail }] });
+  };
+
   res.mongoError = (dbError) => {
     const normalizedErrors = [];
     const errorField = 'errors';

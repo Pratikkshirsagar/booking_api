@@ -6,17 +6,16 @@ exports.login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!password || !email) {
-      return res.status(422).send({
-        errors: [
-          { title: 'Missing Data!', detail: 'Email or passsword missing' },
-        ],
+      return res.sendAPiError({
+        title: 'Missing Data!',
+        detail: 'Email or passsword missing',
       });
     }
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(422).json({
+      return res.sendAPiError({
         title: 'Invalid email',
         detail: `User with provided email doesn't exist`,
       });
@@ -25,7 +24,8 @@ exports.login = async (req, res, next) => {
     const isMatch = await user.hasSamePassword(password);
 
     if (!isMatch) {
-      res.status(401).json({
+      return res.sendAPiError({
+        title: 'Invalid',
         detail: 'Invalid credentials',
       });
     }
@@ -50,30 +50,25 @@ exports.register = async (req, res, next) => {
     const { name, email, password, passwordConfirmation } = req.body;
 
     if (!password || !email) {
-      return res.status(422).send({
-        errors: [
-          { title: 'Missing Data!', detail: 'Email or passsword missing' },
-        ],
+      return res.sendAPiError({
+        title: 'Missing Data!',
+        detail: 'Email or passsword missing',
       });
     }
 
     if (password !== passwordConfirmation) {
-      return res.status(422).send({
-        errors: [
-          {
-            title: 'Invalid password',
-            detail: 'Password is not matching confirmation password',
-          },
-        ],
+      return res.sendAPiError({
+        title: 'Invalid password',
+        detail: 'Password is not matching confirmation password',
       });
     }
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(422).json({
+      return res.sendAPiError({
         title: 'Invalid Email',
-        details: 'use with provided email already exist',
+        detail: 'use with provided email already exist',
       });
     }
 
@@ -82,7 +77,7 @@ exports.register = async (req, res, next) => {
     res.json({ status: true, detail: 'user register' });
   } catch (err) {
     console.log(err);
-    res.json({ status: false });
+    res.mongoError(err);
   }
 };
 
@@ -111,9 +106,7 @@ exports.onlyAuthUser = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    return res
-      .status(422)
-      .json({ status: false, msg: 'Ooooops something went wrong' });
+    res.mongoError(err);
   }
 };
 
