@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const rentalRoutes = require('./routes/rentals');
 const userRoutes = require('./routes/users');
+const { onlyAuthUser } = require('./controllers/user');
 
 // loading env vars
 dotenv.config({ path: './config/config.env' });
@@ -33,6 +34,10 @@ app.use(morgan('dev'));
 
 // Middleware
 app.use(express.json());
+
+app.use('/api/v1/secret', onlyAuthUser, (req, res) => {
+  return res.json({ msg: 'Super secret msg' });
+});
 
 // Routes
 app.use('/api/v1/rentals', rentalRoutes);

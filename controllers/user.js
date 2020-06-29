@@ -85,3 +85,50 @@ exports.register = async (req, res, next) => {
     res.json({ status: false });
   }
 };
+
+exports.onlyAuthUser = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return notAuthorize(res);
+    }
+
+    const decoded = parseToken(token);
+
+    if (!decoded) {
+      return notAuthorize(res);
+    }
+
+    const user = await User.findById(decoded.sub);
+
+    if (!user) {
+      return notAuthorize(res);
+    }
+
+    res.locals.user = user;
+
+    next();
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(422)
+      .json({ status: false, msg: 'Ooooops something went wrong' });
+  }
+};
+
+function parseToken(token) {
+  try {
+    return jwt.verify(token.split(' ')[1], process.env.JET_SECRET);
+  } catch (error) {
+    return null;
+  }
+}
+
+function notAuthorize(res) {
+  return res.status(401).json({
+    status: false,
+    detail: 'Not Authorizer user',
+    msg: 'You need to login to get access',
+  });
+}
