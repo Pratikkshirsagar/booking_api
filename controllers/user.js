@@ -41,7 +41,7 @@ exports.login = async (req, res, next) => {
 
     res.json({ token });
   } catch (err) {
-    res.json({ status: false });
+    res.mongoError(err);
   }
 };
 
