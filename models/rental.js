@@ -37,6 +37,9 @@ const rentalSchema = new mongoose.Schema({
   shared: {
     type: Boolean,
   },
+  owner: {
+    type: mongoose.Schema.ObjectId,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

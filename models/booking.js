@@ -25,7 +25,7 @@ const bookingSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
-    required: [true, 'user is required'],
+    required: true,
   },
   rental: {
     type: mongoose.Schema.ObjectId,
