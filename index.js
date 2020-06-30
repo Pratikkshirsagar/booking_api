@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const rentalRoutes = require('./routes/rentals');
 const userRoutes = require('./routes/users');
+const bookingRoutes = require('./routes/booking');
 const { provideErrorHandlers } = require('./middlewares');
 const { onlyAuthUser } = require('./controllers/user');
 
@@ -13,6 +14,7 @@ dotenv.config({ path: './config/config.env' });
 // models
 require('./models/rental');
 require('./models/user');
+require('./models/booking');
 
 // db connection
 mongoose.connect(
@@ -44,6 +46,8 @@ app.use('/api/v1/secret', onlyAuthUser, (req, res) => {
 // Routes
 app.use('/api/v1/rentals', rentalRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/booking', bookingRoutes);
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
